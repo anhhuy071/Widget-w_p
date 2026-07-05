@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FiCalendar, FiGlobe } from "react-icons/fi";
+import { FiCalendar } from "react-icons/fi";
 import AddToDoForm from "../Widgets/Todo/TodoForm";
 import TodoList from "../Widgets/Todo/TodoList";
 import Clock from "../Widgets/Pomodoro/Clock";
@@ -13,10 +13,8 @@ import { getGreeting } from "../../utils/greeting";
 
 const getGreetingForNow = () => getGreeting();
 
-type DateLang = "vi" | "en";
-
-const formatDate = (date: Date, lang: DateLang) =>
-  date.toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US", {
+const formatDate = (date: Date) =>
+  date.toLocaleDateString("vi-VN", {
     weekday: "long",
     day: "2-digit",
     month: "long",
@@ -25,8 +23,7 @@ const formatDate = (date: Date, lang: DateLang) =>
 
 export default function MainContent() {
   const [clock, setClock] = useState(new Date().toLocaleTimeString());
-  const [dateLang, setDateLang] = useState<DateLang>("vi");
-  const [dateStr, setDateStr] = useState(formatDate(new Date(), "vi"));
+  const [dateStr, setDateStr] = useState(formatDate(new Date()));
   const [greeting, setGreeting] = useState<string>(getGreetingForNow);
   const { name, city } = useProfileStore();
   const { weather, fetchWeatherByCity } = useWeatherStore();
@@ -35,7 +32,7 @@ export default function MainContent() {
     const timer = setInterval(() => {
       const now = new Date();
       setClock(now.toLocaleTimeString());
-      setDateStr(formatDate(now, dateLang));
+      setDateStr(formatDate(now));
       setGreeting(getGreetingForNow());
     }, 1000);
     return () => clearInterval(timer);
@@ -46,11 +43,7 @@ export default function MainContent() {
     fetchWeatherByCity(city);
   }, [city, fetchWeatherByCity]);
 
-  useEffect(() => {
-    setDateStr(formatDate(new Date(), dateLang));
-  }, [dateLang]);
 
-  const toggleDateLang = () => setDateLang((prev) => (prev === "vi" ? "en" : "vi"));
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -89,22 +82,15 @@ export default function MainContent() {
           </motion.article>
 
           <motion.article custom={2} variants={cardVariants} initial="hidden" animate="visible"
-            className="col-span-12 flex min-h-36 items-center justify-between gap-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-300 hover:-translate-y-1 md:col-span-4 lg:p-8">
-            <div className="flex flex-col justify-center">
+            className="col-span-12 flex min-h-36 flex-col justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-300 hover:-translate-y-1 md:col-span-4 lg:p-8">
+            <div>
               <p className="mb-1 text-xs font-semibold uppercase text-[var(--text-muted)]">
-                {dateLang === "vi" ? "Ngày tháng" : "Date"}
+                Ngày tháng
               </p>
               <h2 className="break-words text-xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-2xl">
                 {dateStr}
               </h2>
             </div>
-            <button
-              onClick={toggleDateLang}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-lg text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-white cursor-pointer"
-              title={dateLang === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}
-            >
-              <FiGlobe />
-            </button>
           </motion.article>
         </section>
 
