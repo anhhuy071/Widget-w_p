@@ -11,6 +11,7 @@ describe("Settings", () => {
       name: "Alex",
       city: "Hanoi,VN",
       hasCompletedSetup: true,
+      language: "en",
     });
     useClockStore.setState({
       settings: DEFAULT_SETTINGS,
@@ -38,7 +39,7 @@ describe("Settings", () => {
     fireEvent.change(screen.getByLabelText(/^name$/i), { target: { value: "Jordan" } });
     await user.click(screen.getByRole("button", { name: /save/i }));
 
-    expect(screen.getByText("Settings saved successfully.")).toBeInTheDocument();
+    expect(screen.getByText("Settings saved successfully!")).toBeInTheDocument();
     expect(useProfileStore.getState().name).toBe("Jordan");
   });
 
@@ -46,7 +47,7 @@ describe("Settings", () => {
     const user = userEvent.setup();
     render(<Settings />);
 
-    await user.click(screen.getByRole("button", { name: /reset timer/i }));
+    await user.click(screen.getByRole("button", { name: /reset/i }));
     await user.click(screen.getByRole("button", { name: /save/i }));
 
     expect(useClockStore.getState().settings).toEqual(DEFAULT_SETTINGS);

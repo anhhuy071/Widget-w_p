@@ -44,7 +44,7 @@ const mapWeatherError = (error: unknown): Error => {
   return new Error("Unable to load weather right now.");
 };
 
-export const fetchWeatherByCity = async (city: string): Promise<WeatherData> => {
+export const fetchWeatherByCity = async (city: string, lang: string = "en"): Promise<WeatherData> => {
   const trimmedCity = city.trim();
   if (!trimmedCity) {
     throw new Error("City is required");
@@ -64,16 +64,17 @@ export const fetchWeatherByCity = async (city: string): Promise<WeatherData> => 
 
       const { lat, lon } = geo.data[0];
       const res = await directAxios.get("/data/2.5/weather", {
-        params: { lat, lon, appid: localKey },
+        params: { lat, lon, appid: localKey, lang },
       });
 
       return res.data;
     }
 
-    const res = await axios.get(`/api/weather`, {
+    const baseUrl = import.meta.env.VITE_API_URL || "";
+    const res = await axios.get(`${baseUrl}/api/weather`, {
       params: {
         city: trimmedCity,
-        lang: "en",
+        lang,
       },
     });
 

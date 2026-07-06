@@ -9,21 +9,30 @@ import StartupModal from "../StartupModal/StartupModal";
 import useProfileStore from "../../stores/profileStore";
 import useWeatherStore from "../../stores/weatherStore";
 import { getGreeting } from "../../utils/greeting";
-
+import { useTranslation } from "../../utils/translations";
 
 const getGreetingForNow = () => getGreeting();
 
-const formatDate = (date: Date) =>
-  date.toLocaleDateString("vi-VN", {
+const formatDate = (date: Date, language: string) =>
+  date.toLocaleDateString(language === "vi" ? "vi-VN" : "en-US", {
     weekday: "long",
     day: "2-digit",
     month: "long",
     year: "numeric",
   });
 
+const mapGreetingKey = (greet: string): any => {
+  if (greet === "Good Morning") return "goodMorning";
+  if (greet === "Good Afternoon") return "goodAfternoon";
+  if (greet === "Good Evening") return "goodEvening";
+  if (greet === "Good Night") return "goodNight";
+  return "goodMorning";
+};
+
 export default function MainContent() {
-  const [clock, setClock] = useState(new Date().toLocaleTimeString());
-  const [dateStr, setDateStr] = useState(formatDate(new Date()));
+  const { t, language } = useTranslation();
+  const [clock, setClock] = useState(new Date().toLocaleTimeString(language === "vi" ? "vi-VN" : "en-US"));
+  const [dateStr, setDateStr] = useState(formatDate(new Date(), language));
   const [greeting, setGreeting] = useState<string>(getGreetingForNow);
   const { name, city } = useProfileStore();
   const { weather, fetchWeatherByCity } = useWeatherStore();
@@ -31,19 +40,17 @@ export default function MainContent() {
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
-      setClock(now.toLocaleTimeString());
-      setDateStr(formatDate(now));
+      setClock(now.toLocaleTimeString(language === "vi" ? "vi-VN" : "en-US"));
+      setDateStr(formatDate(now, language));
       setGreeting(getGreetingForNow());
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [language]);
 
   // Fetch cached weather centrally
   useEffect(() => {
     fetchWeatherByCity(city);
   }, [city, fetchWeatherByCity]);
-
-
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -61,10 +68,10 @@ export default function MainContent() {
             className="col-span-12 flex min-h-36 flex-col justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-300 hover:-translate-y-1 md:col-span-4 lg:p-8">
             <div>
               <p className="mb-3 text-xs font-semibold uppercase text-[var(--text-muted)]">
-                Greeting
+                {t("greetingLabel")}
               </p>
               <h1 className="break-words text-2xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-3xl">
-                {greeting}{name ? `, ${name}` : ""}
+                {t(mapGreetingKey(greeting))}{name ? `, ${name}` : ""}
               </h1>
             </div>
           </motion.article>
@@ -73,7 +80,7 @@ export default function MainContent() {
             className="col-span-12 flex min-h-36 flex-col justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-300 hover:-translate-y-1 md:col-span-4 lg:p-8">
             <div>
               <p className="mb-3 text-xs font-semibold uppercase text-[var(--text-muted)]">
-                Local Time
+                {t("localTime")}
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-[var(--text-heading)]">
                 {clock}
@@ -85,7 +92,7 @@ export default function MainContent() {
             className="col-span-12 flex min-h-36 flex-col justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-300 hover:-translate-y-1 md:col-span-4 lg:p-8">
             <div>
               <p className="mb-1 text-xs font-semibold uppercase text-[var(--text-muted)]">
-                Ngày tháng
+                {t("dateLabel")}
               </p>
               <h2 className="break-words text-xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-2xl">
                 {dateStr}
@@ -98,10 +105,10 @@ export default function MainContent() {
           <article className="flex flex-1 flex-col rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 transition-all duration-500 hover:shadow-[var(--shadow-soft)] lg:p-8">
             <div>
               <p className="mb-3 text-xs font-semibold uppercase text-[var(--text-muted)]">
-                Daily focus
+                {t("dailyFocus")}
               </p>
               <h1 className="text-3xl font-semibold tracking-tight text-[var(--text-heading)]">
-                Todo List
+                {t("todoTitle")}
               </h1>
             </div>
             <div className="mb-6">

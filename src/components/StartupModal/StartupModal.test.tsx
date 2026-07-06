@@ -10,6 +10,7 @@ describe("StartupModal", () => {
       name: "",
       city: "",
       hasCompletedSetup: false,
+      language: "en",
     });
   });
 
@@ -26,8 +27,8 @@ describe("StartupModal", () => {
     const user = userEvent.setup();
     render(<StartupModal />);
 
-    await user.type(screen.getByLabelText(/your name/i), "Alex");
-    await user.selectOptions(screen.getByLabelText(/your city/i), "Hanoi,VN");
+    await user.type(screen.getByLabelText(/name/i), "Alex");
+    await user.selectOptions(screen.getByLabelText(/city/i), "Hanoi,VN");
     await user.click(screen.getByRole("button", { name: /save & continue/i }));
 
     expect(useProfileStore.getState().name).toBe("Alex");

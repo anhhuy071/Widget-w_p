@@ -17,6 +17,7 @@ describe("MainContent", () => {
       name: "Alex",
       city: "Hanoi,VN",
       hasCompletedSetup: true,
+      language: "en",
     });
     useWeatherStore.setState({
       weather: createWeatherFixture({ main: { temp: 24, feels_like: 25, humidity: 60 } }),
@@ -34,7 +35,8 @@ describe("MainContent", () => {
 
     expect(screen.getByText(/Alex/)).toBeInTheDocument();
     expect(screen.getAllByText(/Ha Noi/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/24°C · Clear/)).toBeInTheDocument();
+    expect(screen.getByText(/24°C/)).toBeInTheDocument();
+    expect(screen.getByText(/Clear/)).toBeInTheDocument();
     expect(screen.getByText("Todo List")).toBeInTheDocument();
   });
 
@@ -43,6 +45,6 @@ describe("MainContent", () => {
 
     render(<MainContent />);
 
-    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getByText("Unable to load forecast")).toBeInTheDocument();
   });
 });

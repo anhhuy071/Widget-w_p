@@ -3,10 +3,12 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import AddToDoForm from "./TodoForm";
 import useTodoStore from "../../../stores/todoStore";
+import useProfileStore from "../../../stores/profileStore";
 
 describe("AddToDoForm", () => {
   beforeEach(() => {
     useTodoStore.setState({ todos: [] });
+    useProfileStore.setState({ language: "en" });
   });
 
   it("adds a todo when form is submitted", async () => {

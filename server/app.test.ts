@@ -78,14 +78,42 @@ describe("GET /api/weather", () => {
 });
 
 describe("GET /api/news", () => {
+  const MOCK_RSS = `<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <item>
+      <title>Test article</title>
+      <link>https://vnexpress.net/test</link>
+      <pubDate>Mon, 06 Jul 2026 10:00:00 +0700</pubDate>
+      <description><![CDATA[<a><img src="https://example.com/test.jpg"></a>Description text]]></description>
+    </item>
+  </channel>
+</rss>`;
+
+  beforeEach(() => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        text: () => Promise.resolve(MOCK_RSS),
+      })
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("returns all mock articles by default", async () => {
     const app = createApp();
     const response = await request(app).get("/api/news");
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body.length).toBe(10);
-    expect(response.headers["cache-control"]).toBe("s-maxage=300, stale-while-revalidate=1800");
+    expect(response.body.length).toBe(5); // 1 article per category (5 categories total)
+    expect(response.body[0].title).toBe("Test article");
+    expect(response.body[0].imageUrl).toBe("https://example.com/test.jpg");
+    expect(response.headers["cache-control"]).toBe("s-maxage=21600, stale-while-revalidate=43200");
   });
 
   it("filters articles by category list query", async () => {
@@ -93,7 +121,7 @@ describe("GET /api/news", () => {
     const response = await request(app).get("/api/news").query({ categories: "thethao,suckhoe" });
 
     expect(response.status).toBe(200);
-    expect(response.body.length).toBe(3);
+    expect(response.body.length).toBe(2);
     expect(response.body.every((a: { category: string }) => ["thethao", "suckhoe"].includes(a.category))).toBe(true);
   });
 });

@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 import { fetchWeatherForCity } from "./weatherCore";
-import { fetchMockNews } from "./newsCore";
+import { fetchRealNews } from "./newsCore";
 
 const DEFAULT_CORS_ORIGINS = ["http://localhost:5173"];
 
@@ -63,7 +63,7 @@ export const createApp = () => {
     return res.json(result.data);
   });
 
-  app.get("/api/news", (req, res) => {
+  app.get("/api/news", async (req, res) => {
     const categoriesQuery = req.query.categories;
     let categories: string[] | undefined = undefined;
 
@@ -74,8 +74,8 @@ export const createApp = () => {
         .filter(Boolean);
     }
 
-    const articles = fetchMockNews(categories);
-    res.set("Cache-Control", "s-maxage=300, stale-while-revalidate=1800");
+    const articles = await fetchRealNews(categories);
+    res.set("Cache-Control", "s-maxage=21600, stale-while-revalidate=43200");
     return res.json(articles);
   });
 

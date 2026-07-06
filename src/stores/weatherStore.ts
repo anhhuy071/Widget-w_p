@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { WeatherData } from "../types/weather";
 import { fetchWeatherByCity } from "../services/weatherService";
+import useProfileStore from "./profileStore";
 
 type FetchOptions = {
   force?: boolean;
@@ -48,7 +49,8 @@ const useWeatherStore = create<WeatherStore>((set, get) => ({
     set({ isLoading: true, hasError: false, errorMessage: null, pendingCity: trimmedCity });
 
     try {
-      const data = await fetchWeatherByCity(trimmedCity);
+      const lang = useProfileStore.getState().language || "vi";
+      const data = await fetchWeatherByCity(trimmedCity, lang);
 
       set({
         weather: data,

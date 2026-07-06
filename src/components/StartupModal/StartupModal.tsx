@@ -3,10 +3,11 @@ import { motion } from "framer-motion";
 import useProfileStore from "../../stores/profileStore";
 import { createPortal } from "react-dom";
 import { openWeatherCityOptions } from "../../constants/weatherCities";
+import { useTranslation } from "../../utils/translations";
 
 export default function StartupModal() {
-  const { saveProfile,  hasCompletedSetup,  } =
-    useProfileStore();
+  const { saveProfile, hasCompletedSetup, language, setLanguage } = useProfileStore();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({ name: "", city: "" });
   const [error, setError] = useState<string | null>(null);
     
@@ -24,7 +25,7 @@ export default function StartupModal() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.city.trim()) {
-      setError("Name and city are required.");
+      setError(language === "vi" ? "Vui lòng điền tên và thành phố." : "Name and city are required.");
       return;
     }
     saveProfile(formData.name, formData.city);
@@ -43,12 +44,40 @@ export default function StartupModal() {
         transition={{ duration: 0.35, ease: "easeOut" }}
         className="w-full max-w-md rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl sm:p-10"
       >
-        <div className="mb-6">
-          <p className="mb-1 text-xs font-semibold uppercase text-[var(--accent)]">Pulse Board</p>
-          <h2 className="text-2xl font-bold text-[var(--text-heading)]">
-            Welcome! Let's set you up
-          </h2>
-          <p className="text-sm text-[var(--text-muted)] mt-1">We only need two things to personalise your dashboard.</p>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p className="mb-1 text-xs font-semibold uppercase text-[var(--accent)]">Pulse Board</p>
+            <h2 className="text-2xl font-bold text-[var(--text-heading)]">
+              {t("startupTitle")}
+            </h2>
+            <p className="text-sm text-[var(--text-muted)] mt-1">
+              {t("startupSubtitle")}
+            </p>
+          </div>
+          <div className="flex shrink-0 gap-1 rounded-md border border-[var(--border)] bg-[var(--surface-muted)] p-1">
+            <button
+              type="button"
+              onClick={() => setLanguage("vi")}
+              className={`rounded px-2 py-1 text-xs font-semibold transition cursor-pointer ${
+                language === "vi"
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-[var(--text-muted)] hover:text-[var(--text)]"
+              }`}
+            >
+              VI
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={`rounded px-2 py-1 text-xs font-semibold transition cursor-pointer ${
+                language === "en"
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-[var(--text-muted)] hover:text-[var(--text)]"
+              }`}
+            >
+              EN
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -59,7 +88,7 @@ export default function StartupModal() {
           )}
           <div>
             <label htmlFor="setup-name" className="mb-1.5 block text-xs font-semibold uppercase text-[var(--text-muted)]">
-              Your Name
+              {t("nameLabel")}
             </label>
             <input
               id="setup-name"
@@ -76,7 +105,7 @@ export default function StartupModal() {
           </div>
           <div>
             <label htmlFor="setup-city" className="mb-1.5 block text-xs font-semibold uppercase text-[var(--text-muted)]">
-              Your City
+              {t("cityLabel")}
             </label>
             <select
               id="setup-city"
@@ -87,7 +116,7 @@ export default function StartupModal() {
               required
             >
               <option value="" disabled>
-                Select a city or province in Vietnam
+                {t("startupCityPlaceholder")}
               </option>
               {openWeatherCityOptions.map((city) => (
                 <option key={city.value} value={city.value}>
@@ -95,7 +124,9 @@ export default function StartupModal() {
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">Used for the weather widget.</p>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">
+              {language === "vi" ? "Dùng cho widget thời tiết." : "Used for the weather widget."}
+            </p>
           </div>
 
           <div className="flex justify-end pt-2">
@@ -103,7 +134,7 @@ export default function StartupModal() {
               type="submit"
               className="w-full rounded-md bg-[var(--accent)] px-6 py-2.5 font-semibold text-white shadow-lg transition hover:bg-[var(--accent-strong)] sm:w-auto"
             >
-              Save &amp; Continue
+              {t("startupSave")}
             </button>
           </div>
         </form>

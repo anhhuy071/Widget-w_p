@@ -1,17 +1,16 @@
 import { AnimatePresence } from "framer-motion";
 import useTodoStore from "../../../stores/todoStore";
 import TodoItem from "./TodoItem";
+import { useTranslation } from "../../../utils/translations";
 
 const TodoList = () => {
   const { todos } = useTodoStore();
+  const { t } = useTranslation();
 
   if (todos.length === 0) {
     return (
       <div className="flex min-h-48 flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-6 text-center">
-        <p className="font-semibold text-[var(--text-heading)]">No tasks yet.</p>
-        <span className="mt-1 max-w-sm text-sm text-[var(--text-muted)]">
-          Add your first item to start the day with a clear plan.
-        </span>
+        <p className="font-semibold text-[var(--text-heading)]">{t("noTodos")}</p>
       </div>
     );
   }

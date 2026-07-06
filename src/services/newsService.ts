@@ -4,7 +4,8 @@ import type { NewsArticle } from "../types/news";
 export const fetchNews = async (categories?: string[]): Promise<NewsArticle[]> => {
   try {
     const params = categories && categories.length > 0 ? { categories: categories.join(",") } : {};
-    const res = await axios.get<NewsArticle[]>("/api/news", { params });
+    const baseUrl = import.meta.env.VITE_API_URL || "";
+    const res = await axios.get<NewsArticle[]>(`${baseUrl}/api/news`, { params });
     return res.data;
   } catch (error) {
     console.error("Failed to fetch news:", error);

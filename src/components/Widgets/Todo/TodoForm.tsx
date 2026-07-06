@@ -2,10 +2,12 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { FiPlus } from "react-icons/fi";
 import useTodoStore from "../../../stores/todoStore";
+import { useTranslation } from "../../../utils/translations";
 
 const AddToDoForm = () => {
   const [text, setText] = useState("");
   const addTodo = useTodoStore((state) => state.addTodo);
+  const { t } = useTranslation();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,14 +28,14 @@ const AddToDoForm = () => {
           type="text"
           value={text}
           onChange={(event) => setText(event.target.value)}
-          placeholder="Write your next task..."
+          placeholder={t("todoPlaceholder")}
         />
         <button
           className="inline-flex flex-none items-center justify-center gap-2 rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--accent-strong)]"
           type="submit"
         >
           <FiPlus aria-hidden="true" />
-          Add
+          {t("addButton")}
         </button>
       </div>
     </form>

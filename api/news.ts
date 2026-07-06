@@ -1,4 +1,4 @@
-import { fetchMockNews } from "../server/newsCore";
+import { fetchRealNews } from "../server/newsCore";
 
 type QueryValue = string | string[] | undefined;
 
@@ -47,7 +47,7 @@ export default async function handler(req: ServerlessRequest, res: ServerlessRes
       .filter(Boolean);
   }
 
-  const articles = fetchMockNews(categories);
-  res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=1800");
+  const articles = await fetchRealNews(categories);
+  res.setHeader("Cache-Control", "s-maxage=21600, stale-while-revalidate=43200");
   return json(res, 200, articles);
 }

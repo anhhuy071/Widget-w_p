@@ -15,6 +15,8 @@ describe("useNewsStore", () => {
       hasError: false,
       errorMessage: null,
       likedArticleIds: [],
+      lastFetched: null,
+      lastCategories: [],
     });
   });
 
@@ -24,6 +26,8 @@ describe("useNewsStore", () => {
     expect(state.isLoading).toBe(false);
     expect(state.hasError).toBe(false);
     expect(state.likedArticleIds).toEqual([]);
+    expect(state.lastFetched).toBeNull();
+    expect(state.lastCategories).toEqual([]);
   });
 
   it("fetches articles successfully", async () => {
@@ -52,6 +56,8 @@ describe("useNewsStore", () => {
     expect(state.isLoading).toBe(false);
     expect(state.hasError).toBe(false);
     expect(state.articles).toEqual(mockArticles);
+    expect(state.lastCategories).toEqual(["thethao"]);
+    expect(state.lastFetched).toBeGreaterThan(0);
     expect(newsService.fetchNews).toHaveBeenCalledWith(["thethao"]);
   });
 
@@ -76,5 +82,60 @@ describe("useNewsStore", () => {
 
     useNewsStore.getState().toggleLike("news-1");
     expect(useNewsStore.getState().likedArticleIds).toEqual([]);
+  });
+
+  it("caches news and skips fetch if conditions are met", async () => {
+    const mockArticles = [{ id: "1", title: "Cached article", category: "thoisu", url: "", source: "", imageUrl: "", publishedAt: "", likes: 0 }];
+    useNewsStore.setState({
+      articles: mockArticles,
+      lastCategories: ["thoisu"],
+      lastFetched: Date.now() - 1000 * 60 * 60 * 2, // 2 hours ago (within 6h limit)
+    });
+
+    await useNewsStore.getState().fetchArticles(["thoisu"]);
+
+    expect(newsService.fetchNews).not.toHaveBeenCalled();
+  });
+
+  it("fetches news if categories change", async () => {
+    const mockArticles = [{ id: "1", title: "Cached article", category: "thoisu", url: "", source: "", imageUrl: "", publishedAt: "", likes: 0 }];
+    useNewsStore.setState({
+      articles: mockArticles,
+      lastCategories: ["thoisu"],
+      lastFetched: Date.now() - 1000 * 60 * 60 * 2,
+    });
+    vi.mocked(newsService.fetchNews).mockResolvedValueOnce([]);
+
+    await useNewsStore.getState().fetchArticles(["thethao"]);
+
+    expect(newsService.fetchNews).toHaveBeenCalledWith(["thethao"]);
+  });
+
+  it("fetches news if cache expires (>6 hours)", async () => {
+    const mockArticles = [{ id: "1", title: "Cached article", category: "thoisu", url: "", source: "", imageUrl: "", publishedAt: "", likes: 0 }];
+    useNewsStore.setState({
+      articles: mockArticles,
+      lastCategories: ["thoisu"],
+      lastFetched: Date.now() - 1000 * 60 * 60 * 7, // 7 hours ago
+    });
+    vi.mocked(newsService.fetchNews).mockResolvedValueOnce([]);
+
+    await useNewsStore.getState().fetchArticles(["thoisu"]);
+
+    expect(newsService.fetchNews).toHaveBeenCalledWith(["thoisu"]);
+  });
+
+  it("fetches news if force is true", async () => {
+    const mockArticles = [{ id: "1", title: "Cached article", category: "thoisu", url: "", source: "", imageUrl: "", publishedAt: "", likes: 0 }];
+    useNewsStore.setState({
+      articles: mockArticles,
+      lastCategories: ["thoisu"],
+      lastFetched: Date.now() - 1000 * 60 * 60 * 2,
+    });
+    vi.mocked(newsService.fetchNews).mockResolvedValueOnce([]);
+
+    await useNewsStore.getState().fetchArticles(["thoisu"], true);
+
+    expect(newsService.fetchNews).toHaveBeenCalledWith(["thoisu"]);
   });
 });

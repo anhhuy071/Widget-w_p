@@ -48,7 +48,7 @@ export default function NewsFeed() {
 
   const handleRefresh = async () => {
     setIsRotating(true);
-    await fetchArticles(activeInterests);
+    await fetchArticles(activeInterests, true);
     setTimeout(() => setIsRotating(false), 600);
   };
 

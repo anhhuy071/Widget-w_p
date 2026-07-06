@@ -9,7 +9,9 @@ type NewsStore = {
   hasError: boolean;
   errorMessage: string | null;
   likedArticleIds: string[];
-  fetchArticles: (categories?: string[]) => Promise<void>;
+  lastFetched: number | null;
+  lastCategories: string[];
+  fetchArticles: (categories?: string[], force?: boolean) => Promise<void>;
   toggleLike: (articleId: string) => void;
 };
 
@@ -21,14 +23,34 @@ export const useNewsStore = create<NewsStore>()(
       hasError: false,
       errorMessage: null,
       likedArticleIds: [],
-      fetchArticles: async (categories) => {
+      lastFetched: null,
+      lastCategories: [],
+      fetchArticles: async (categories, force = false) => {
         // Prevent duplicate calls if already loading
         if (get().isLoading) return;
+
+        const targetCategories = categories ? [...categories].sort() : [];
+        const currentCategories = get().lastCategories || [];
+        const categoriesChanged = JSON.stringify(targetCategories) !== JSON.stringify(currentCategories);
+        
+        const cacheDuration = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+        const lastFetchedTime = get().lastFetched;
+        const cacheExpired = !lastFetchedTime || (Date.now() - lastFetchedTime > cacheDuration);
+
+        // Skip fetch if not forced, we have cached articles, categories haven't changed, and cache hasn't expired
+        if (!force && get().articles.length > 0 && !categoriesChanged && !cacheExpired) {
+          return;
+        }
 
         set({ isLoading: true, hasError: false, errorMessage: null });
         try {
           const data = await fetchNews(categories);
-          set({ articles: data, isLoading: false });
+          set({
+            articles: data,
+            lastFetched: Date.now(),
+            lastCategories: targetCategories,
+            isLoading: false,
+          });
         } catch (error) {
           set({
             isLoading: false,
@@ -49,7 +71,12 @@ export const useNewsStore = create<NewsStore>()(
     }),
     {
       name: "news-storage",
-      partialize: (state) => ({ likedArticleIds: state.likedArticleIds }),
+      partialize: (state) => ({
+        likedArticleIds: state.likedArticleIds,
+        articles: state.articles,
+        lastFetched: state.lastFetched,
+        lastCategories: state.lastCategories,
+      }),
     },
   ),
 );
