@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Pulse Board - Smart Dashboard",
+  "version": "1.0.0",
+  "description": "A beautiful, premium productivity dashboard with weather, news, todos, and Pomodoro timer.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Pulse Board"
+  },
+  "icons": {
+    "16": "favicon.svg",
+    "48": "favicon.svg",
+    "128": "favicon.svg"
+  }
+}

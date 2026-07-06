@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch Edge against localhost",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/Dashboard",
+      "webRoot": "${workspaceFolder}",
       "sourceMapPathOverrides": {
         "/src/*": "${webRoot}/src/*",
         "src/*": "${webRoot}/src/*",
