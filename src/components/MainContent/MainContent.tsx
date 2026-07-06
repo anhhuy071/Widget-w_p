@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FiCalendar } from "react-icons/fi";
 import AddToDoForm from "../Widgets/Todo/TodoForm";
 import TodoList from "../Widgets/Todo/TodoList";
 import Clock from "../Widgets/Pomodoro/Clock";
@@ -35,7 +34,7 @@ export default function MainContent() {
   const [dateStr, setDateStr] = useState(formatDate(new Date(), language));
   const [greeting, setGreeting] = useState<string>(getGreetingForNow);
   const { name, city } = useProfileStore();
-  const { weather, fetchWeatherByCity } = useWeatherStore();
+  const { fetchWeatherByCity } = useWeatherStore();
 
   useEffect(() => {
     const timer = setInterval(() => {

@@ -124,9 +124,9 @@ export const fetchRealNews = async (categories?: string[]): Promise<NewsArticle[
       return articles;
     }
     
-    return fetchMockNews(categories);
+    return [];
   } catch (error) {
-    console.error("Failed to fetch real news, falling back to mock:", error);
-    return fetchMockNews(categories);
+    console.error("Failed to fetch real news:", error);
+    return [];
   }
 };
