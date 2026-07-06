@@ -1,4 +1,4 @@
-import { fetchWeatherForCity } from "../server/weatherCore";
+import { fetchWeatherForCity } from "../server/weatherCore.js";
 
 type QueryValue = string | string[] | undefined;
 

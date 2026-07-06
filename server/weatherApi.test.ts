@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import handler from "./weather";
+import handler from "../api/weather";
 
 const createResponse = () => {
   const headers: Record<string, string> = {};
