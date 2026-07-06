@@ -32,7 +32,7 @@ export const fetchWeatherForCity = async (
     geoUrl.searchParams.set("limit", "1");
     geoUrl.searchParams.set("appid", apiKey);
 
-    const geoResponse = await fetch(geoUrl);
+    const geoResponse = await fetch(geoUrl.toString());
     if (!geoResponse.ok) {
       return {
         ok: false,
@@ -59,7 +59,7 @@ export const fetchWeatherForCity = async (
     weatherUrl.searchParams.set("lang", lang);
     weatherUrl.searchParams.set("appid", apiKey);
 
-    const weatherResponse = await fetch(weatherUrl);
+    const weatherResponse = await fetch(weatherUrl.toString());
     const weatherData = await weatherResponse.json();
 
     if (!weatherResponse.ok) {

@@ -1,4 +1,4 @@
-import { fetchRealNews } from "../server/newsCore";
+import { fetchRealNews } from "../server/newsCore.js";
 
 type QueryValue = string | string[] | undefined;
 
